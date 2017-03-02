@@ -114,6 +114,7 @@ var datad3;
 var datagcharts;
 var arrayData;
 var bulletMeasures;
+var myDateSlider;
     
 var svg;
 var video;
@@ -241,9 +242,12 @@ function controlCursorPosition() {
         updateBulletChart(bulletMeasures);
     }
     
+    console.log(myDateSlider.getState());
+    
     pitchChart.getChart().setSelection([{row:seconds, column:1}]);
     energyChart.getChart().setSelection([{row:seconds, column:1}]);
     speakingChart.getChart().setSelection([{row:seconds, column:1}]);
+    
 }
     
 function uniqueElements(arr) {
@@ -356,7 +360,7 @@ function drawVisualization() {
       myDashboard = new google.visualization.Dashboard(dash_container);
        
       // Create a date range slider
-      var myDateSlider = new google.visualization.ControlWrapper({
+      myDateSlider = new google.visualization.ControlWrapper({
         'controlType': 'ChartRangeFilter',
         'containerId': 'control_div',
         'options': {
