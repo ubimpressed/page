@@ -115,6 +115,7 @@ var datagcharts;
 var arrayData;
 var bulletMeasures;
 var myDateSlider;
+
     
 var svg;
 var video;
@@ -122,6 +123,7 @@ var video;
 var firstDate;
 var endDate;
 
+var currentTime = 0;
 var stopPoint = 0;
 var pastTime = 0;
 
@@ -237,13 +239,21 @@ function controlCursorPosition() {
     
 //    console.log("ha "+minutes+","+seconds);
     
+    var startPositionSlider = myDateSlider.getState().range.start;
+    var endPositionSlider = myDateSlider.getState().range.end;
+    console.log(startPositionSlider);
+            
+//    if (startPositionSlider !=1) {
+//        seconds = seconds-startPositionSlider;
+//    }
+    
     if ((seconds%10==0) && (seconds>30)) {
         bulletMeasures = getMeasures(datagcharts,arrayData,seconds);
         updateBulletChart(bulletMeasures);
     }
     
-    console.log(myDateSlider.getState());
-    
+    console.log("seconds: "+seconds);
+
     pitchChart.getChart().setSelection([{row:seconds, column:1}]);
     energyChart.getChart().setSelection([{row:seconds, column:1}]);
     speakingChart.getChart().setSelection([{row:seconds, column:1}]);
@@ -275,8 +285,8 @@ function getMeasures(data,arrayData,seconds) {
       //2 - Pitch
       //3 - Energy
       //4 - Nodding
-      console.log(data.getColumnRange(2));
-      console.log(data.getValue(250, 2));
+//      console.log(data.getColumnRange(2));
+//      console.log(data.getValue(250, 2));
     
       var array_speaking = [];
       var array_pitch = [];
@@ -303,6 +313,10 @@ function getMeasures(data,arrayData,seconds) {
       var std_pitch = math.std(array_pitch);
       var mean_energy = math.mean(array_energy);
       var std_energy = math.std(array_energy);
+    
+      if (isNaN(ratio_speaking)) {
+          ratio_speaking = 0;
+      }
     
       console.log("Ratio Speaking: "+ratio_speaking);
       console.log("Pitch: "+std_pitch);
@@ -440,6 +454,23 @@ function drawVisualization() {
       myDashboard.bind(myDateSlider, [pitchChart, energyChart, speakingChart]);
       myDashboard.draw(datagcharts);
        
+      // Pass in a function definition.
+      google.visualization.events.addListener(myDateSlider, 'statechange', function() {
+        var startPositionSlider = myDateSlider.getState().range.start;
+        var endPositionSlider = myDateSlider.getState().range.end;
+        console.log(startPositionSlider+","+endPositionSlider);
+        if (typeof video != "undefined") {
+            console.log("VideoTime: "+video.currentTime);
+            video.currentTime = startPositionSlider;
+            
+            bulletMeasures = getMeasures(datagcharts,arrayData,seconds);
+            updateBulletChart(bulletMeasures);
+            
+        }
+        
+        
+      });
+       
    });
 }
 
@@ -462,7 +493,7 @@ google.setOnLoadCallback(drawVisualization)
             <center>
                 <div class="border">
                 <div class="videoTest" style="padding-bottom:20px;">
-                    <video id='video' width="500" height="240"><source src="./videos/interview_ubimpressed.mp4" type="video/mp4"></video>
+                    <video id='video' width="500" height="240" controls><source src="./videos/interview_ubimpressed.mp4" type="video/mp4"></video>
                 <button class='myButton' id='play' onclick="playVideo()" style="width:300px; height:40px;">Play</button>
                 </div>
                 </div>
