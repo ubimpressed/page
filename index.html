@@ -33,7 +33,7 @@ html {
     -moz-background-size: cover;
     -o-background-size: cover;
     background-size: cover;
-    margin: 15px 15px 15px 15px;
+    margin: 0px 20px 0px 20px;
 
 }
 
@@ -45,7 +45,7 @@ html {
 }
 
 .border{
-    padding-top: 20px;
+    padding-top: 10px;
 /*    background: url(images/metal-texture.jpg); */
 
 /*    background-color: lightgrey;*/
@@ -82,14 +82,26 @@ html {
 }
 
 .bullet { font: 10px sans-serif; }
-.bullet .marker { stroke: #000; stroke-width: 2px; }
+.bullet .marker { 
+    stroke: #000; 
+    stroke-width: 2px; 
+}
 .bullet .tick line { stroke: #666; stroke-width: .5px; }
+/*
 .bullet .range.s0 { fill: #eee; }
 .bullet .range.s1 { fill: #ddd; }
 .bullet .range.s2 { fill: #ccc; }
-/*.bullet .measure.s0 { fill: steelblue; }*/
-.bullet .measure.s0 { fill: lightsteelblue; }
-.bullet .measure.s1 { fill: steelblue; }
+*/
+.bullet .range.s0 { fill: #41f4b2; }
+.bullet .range.s2 { fill: #f44242; }
+.bullet .range.s1 { fill: #f4b841; }
+
+.bullet .measure.s0 { fill: darkgrey; }
+.bullet .measure.s1 { 
+    fill: black; 
+}
+/*.bullet .measure.s1 { fill: steelblue; }*/
+    
 .bullet .title { font-size: 14px; font-weight: bold; }
 .bullet .subtitle { fill: #999; }
 
@@ -97,7 +109,7 @@ html {
     
  <title>Google Graph and CSV</title>
  <meta name="description" content="test">
- <link rel="stylesheet" href="./style.css"	type="text/css">
+ <link rel="stylesheet" href="./style2.css"	type="text/css">
 <script src="math.js" type="text/javascript"></script>
 <script src="//d3js.org/d3.v3.min.js"></script>
 <script src="bullet.js"></script>
@@ -130,19 +142,20 @@ var pastTime = 0;
 var newStartDate;
 var intervalId;
 
+var pieChart;
 var pitchChart;
 var energyChart;
 var speakingChart;
 
 var margin = {top: 5, right: 40, bottom: 20, left: 120},
     width = 480 - margin.left - margin.right,
-    height = 50 - margin.top - margin.bottom;
+    height = 60 - margin.top - margin.bottom;
 
 var chart = d3.bullet()
     .width(width)
     .height(height);
 
-d3.json("bulletchart.json", function(error, data) {
+d3.json("bulletchart2.json", function(error, data) {
   if (error) throw error;
   svg = d3.select("#scores").selectAll("svg")
       .data(data)
@@ -247,10 +260,15 @@ function controlCursorPosition() {
 //        seconds = seconds-startPositionSlider;
 //    }
     
-    if ((seconds%10==0) && (seconds>30)) {
-        bulletMeasures = getMeasures(datagcharts,arrayData,seconds);
+    if (seconds%10==0) {
+        bulletMeasures = getRangeMeasures(datagcharts,arrayData,1,seconds);
         updateBulletChart(bulletMeasures);
     }
+    
+//    if ((seconds%10==0) && (seconds>30)) {
+//        bulletMeasures = getMeasures(datagcharts,arrayData,seconds);
+//        updateBulletChart(bulletMeasures);
+//    }
     
     console.log("seconds: "+seconds);
 
@@ -276,6 +294,93 @@ function uniqueElements(arr) {
 
     return [a, b];
 }
+    
+function getRangeMeasures(data,arrayData,start,end) {
+
+      var array_speaking = [];
+      var array_pitch = [];
+      var array_energy = [];
+      var array_nodding = [];
+    
+      var secondsSpeaking = 0;
+      var secondsNodding = 0;
+      var timeDiff = end-start;
+           
+//      for (var i = 0; i < (arrayData.length-1); i++) {
+    for (var i = start; i < end; i++) {
+        
+          var value_pitch = 0;
+          var value_energy = 0;
+          var value_speaking = data.getValue(i,1);
+          if (value_speaking == 1) {
+              //Gets pitch only if it detects speaking
+              value_pitch = data.getValue(i,2);
+              value_energy = data.getValue(i,3);
+              array_pitch.push(value_pitch);
+              array_energy.push(value_energy);
+          }
+          var value_nodding = data.getValue(i,4);
+          
+          array_speaking.push(value_speaking);
+          array_nodding.push(value_nodding);
+      }
+      var unique_speaking = uniqueElements(array_speaking);
+      var unique_nodding = uniqueElements(array_nodding);
+
+      console.log("uniqueeeeee: "+unique_speaking+";"+timeDiff+";");
+      console.log("nodddingggg: "+unique_nodding+";"+timeDiff+";"+unique_nodding[1][1]);
+      console.log("speaking: "+unique_speaking[1].length);
+    
+    
+      if ((unique_speaking[1].length==1) && (unique_speaking[0]==1)) {
+          secondsSpeaking = unique_speaking[1];
+      }
+      else {
+          secondsSpeaking = unique_speaking[1][1];
+      }
+    
+      if ((unique_nodding[1].length==1) && (unique_nodding[0]==1)) {
+          secondsNodding = unique_nodding[1];
+      }
+      else {
+          secondsNodding = unique_nodding[1][1];
+      }
+      var mean_pitch = 0;
+      var std_pitch = 0;
+      var mean_energy = 0;
+      var std_energy = 0;
+    
+      console.log(array_pitch.length+","+array_energy);
+      var ratio_speaking = secondsSpeaking/timeDiff;
+      var ratio_nodding = secondsNodding/timeDiff;
+    
+      if (array_pitch.length != 0) {
+          mean_pitch = math.mean(array_pitch);
+          std_pitch = math.std(array_pitch);
+      }
+      if (array_energy.length != 0) {
+          mean_energy = math.mean(array_energy);
+          std_energy = math.std(array_energy);
+      }
+    
+      if (isNaN(ratio_speaking)) {
+          ratio_speaking = 0;
+      }
+    
+      if (isNaN(ratio_nodding)) {
+          ratio_nodding = 0;
+      }
+    
+      console.log("Ratio Speaking: "+ratio_speaking);
+      console.log("Pitch: "+std_pitch);
+      console.log("Energy: "+mean_energy);
+      console.log("Ratio Nodding: "+ratio_nodding);
+    
+    return [ratio_speaking,std_pitch,mean_energy,ratio_nodding];
+    
+}
+    
+
     
 function getMeasures(data,arrayData,seconds) {
      //------------------------------------------
@@ -318,6 +423,10 @@ function getMeasures(data,arrayData,seconds) {
           ratio_speaking = 0;
       }
     
+      if (isNaN(ratio_nodding)) {
+          ratio_nodding = 0;
+      }
+    
       console.log("Ratio Speaking: "+ratio_speaking);
       console.log("Pitch: "+std_pitch);
       console.log("Energy: "+mean_energy);
@@ -328,11 +437,10 @@ function getMeasures(data,arrayData,seconds) {
 }
     
 function updateBulletChart(arrayValues) {
-  console.log("ARRAY: "+arrayValues);
-  console.log("0: "+datad3[0].measures);
-  console.log("1: "+datad3[1].measures);
-  console.log("2: "+datad3[2].measures);
-  console.log("3: "+datad3[3].measures);
+//  console.log("0: "+datad3[0].measures);
+//  console.log("1: "+datad3[1].measures);
+//  console.log("2: "+datad3[2].measures);
+//  console.log("3: "+datad3[3].measures);
   //TODO I don't know why but the values are being switched here (0 to 1 and 1 to 0). I have to check if the order in the array is right
   //New speaking time
   datad3[0].measures = [arrayValues[1],arrayValues[1]];
@@ -343,10 +451,10 @@ function updateBulletChart(arrayValues) {
   //New nodding
   datad3[3].measures = [arrayValues[3],arrayValues[3]];
     
-  console.log("0: "+datad3[0].measures);
-  console.log("1: "+datad3[1].measures);
-  console.log("2: "+datad3[2].measures);
-  console.log("3: "+datad3[3].measures);
+//  console.log("0: "+datad3[0].measures);
+//  console.log("1: "+datad3[1].measures);
+//  console.log("2: "+datad3[2].measures);
+//  console.log("3: "+datad3[3].measures);
     
   svg.call(chart.duration(1000)); // TODO automatic transition
 
@@ -393,6 +501,7 @@ function drawVisualization() {
         }
       });
        
+       
        pitchChart = new google.visualization.ChartWrapper({
              chartType: 'AreaChart',
              containerId: 'pitchChart',
@@ -400,6 +509,7 @@ function drawVisualization() {
              options:{
                 title: 'Pitch',
                  width: 850,
+                 height: 200,
                 tooltip: { trigger: 'selection' },
                 legend: {position: 'none'},
                 colors: ['#3A98FC', '#e6693e', '#ec8f6e', '#f3b49f', '#f6c7b6'],
@@ -423,6 +533,7 @@ function drawVisualization() {
             colors: ['#FC6A3A', '#e6693e', '#ec8f6e', '#f3b49f', '#f6c7b6'],
             title: 'Energy',
              width: 850,
+             height: 200,
             titleTextStyle : {color: 'grey', fontSize: 11},
          },
           view:{
@@ -443,7 +554,7 @@ function drawVisualization() {
             colors: ['#41f465', '#e6693e', '#ec8f6e', '#f3b49f', '#f6c7b6'],
             title: 'Speaking Time',
             width: 850,
-
+            height: 200,
             titleTextStyle : {color: 'grey', fontSize: 11},
          },
           view:{
@@ -452,24 +563,31 @@ function drawVisualization() {
       });
        
       myDashboard.bind(myDateSlider, [pitchChart, energyChart, speakingChart]);
+//      myDashboard.bind(myDateSlider, [pitchChart, energyChart]);
       myDashboard.draw(datagcharts);
        
       // Pass in a function definition.
       google.visualization.events.addListener(myDateSlider, 'statechange', function() {
-        var startPositionSlider = myDateSlider.getState().range.start;
-        var endPositionSlider = myDateSlider.getState().range.end;
-        console.log(startPositionSlider+","+endPositionSlider);
+        var startPositionSlider = parseInt(myDateSlider.getState().range.start);
+        var endPositionSlider = parseInt(myDateSlider.getState().range.end);
+        
+        console.log("START/END: "+startPositionSlider+","+endPositionSlider);
+        
+        
+        bulletMeasures = getRangeMeasures(datagcharts,arrayData,startPositionSlider,endPositionSlider);
+        updateBulletChart(bulletMeasures);
+        
         if (typeof video != "undefined") {
             console.log("VideoTime: "+video.currentTime);
             video.currentTime = startPositionSlider;
             
-            bulletMeasures = getMeasures(datagcharts,arrayData,seconds);
-            updateBulletChart(bulletMeasures);
+//            bulletMeasures = getMeasures(datagcharts,arrayData,seconds);
             
         }
         
         
       });
+       
        
    });
 }
@@ -492,8 +610,8 @@ google.setOnLoadCallback(drawVisualization)
             <div id="menu">
             <center>
                 <div class="border">
-                <div class="videoTest" style="padding-bottom:20px;">
-                    <video id='video' width="500" height="240" controls><source src="./videos/interview_ubimpressed.mp4" type="video/mp4"></video>
+                <div class="videoTest" style="padding-bottom:10px;">
+                    <video id='video' width="500" height="240" style="margin-left:-5px"><source src="./videos/interview_ubimpressed.mp4" type="video/mp4"></video>
                 <button class='myButton' id='play' onclick="playVideo()" style="width:300px; height:40px;">Play</button>
                 </div>
                 </div>
@@ -504,9 +622,9 @@ google.setOnLoadCallback(drawVisualization)
             </center>
 
             </div>
-            <div id="content">
-                <div id="pitchChart" style="padding-left:85px; max-width: 500px; padding-top:10px;"></div>
-                <div id="energyChart" style="padding-left:85px; max-width: 500px; padding-top:10px;"></div>
+            <div id="content" style="padding-top:40px;">
+                <div id="pitchChart" style="padding-left:85px; max-width: 400px; padding-top:0px;"></div>
+                <div id="energyChart" style="padding-left:85px; max-width: 400px; padding-top:0px;"></div>
                 <div id="speakingChart" style="padding-left:85px; max-width: 500px; padding-top:10px;"></div>
                 <div id="control_div" style="padding-left:85px; max-width: 840px;"> Controls renders here </div>
 <!--                <div id="chartdiv" style="width:90%; height:750px; padding-left:80px"></div>-->

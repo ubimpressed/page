@@ -1,5 +1,5 @@
 [
-    {"title":"Voice Modulation","subtitle":"","ranges":[30,90,120],"measures":[97,97],"markers":[110]},
+    {"title":"Voice Modulation","subtitle":"","ranges":[5,12,25],"measures":[15,15],"markers":[19]},
     {"title":"Speaking Time","subtitle":"","ranges":[0.2,0.50,1],"measures":[0.70,0.70],"markers":[0.80]},
     {"title":"Loudness","subtitle":"","ranges":[0.002,0.004,0.01],"measures":[0.003,0.003],"markers":[0.005]},
     {"title":"Nodding","subtitle":"","ranges":[0.2,0.50,1],"measures":[0.30,0.30],"markers":[0.45]}
