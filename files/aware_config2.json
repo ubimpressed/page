@@ -1,0 +1,99 @@
+[{
+   "schedule_id":"drinking",
+   "hours":[-1,9,12,15,21],
+   "randomize":5,
+   "start_date":"10-28-2016",
+   "expiration":15,
+   "end_date":"12-28-2020",
+   "notification_title":"AWARE ESM",
+   "notification_body":"Did you drink alcohol yesterday?",
+   "esms":[
+       {"esm": {
+           "esm_type": 1,
+           "esm_title":"This is a test!",
+           "esm_instructions":"",
+           "esm_submit":"Submit",
+           "esm_expiration_threshold": 60,
+           "esm_trigger": "bd-q5",
+           "esm_na": 0
+           }
+       },
+	{"esm": {
+		"esm_type": 2,
+		"esm_title":"ESM Radio",
+		"esm_instructions":"The user can only choose one option",
+		"esm_radios":["Option one","Option two","Other"],
+		"esm_submit":"Next",
+		"esm_expiration_threshold": 60,
+		"esm_trigger": "AWARE Tester"
+		}
+	},
+       {"esm": {
+           "esm_type": 3,
+           "esm_title":"ESM Checkbox",
+           "esm_instructions":"The user can choose multiple options.",
+           "esm_checkboxes":["One","Two","Other"],
+	   "esm_submit":"Next",
+           "esm_expiration_threshold": 60,
+           "esm_trigger": "bd-q6"
+           }
+       },
+       {"esm": {
+           "esm_type": 4,
+           "esm_title":"ESM Likert",
+           "esm_instructions":"User rating 1 to 5 or 7 at 1 step increments.",
+           "esm_likert_max":5,
+	   "esm_likert_max_label":"Great",
+	   "esm_likert_min_label":"Bad",
+	   "esm_likert_step":1,
+	   "esm_submit":"Next",
+           "esm_expiration_threshold": 60,
+           "esm_trigger": "bd-q7"
+           }
+       },
+       {"esm": {
+           "esm_type": 5,
+           "esm_title":"ESM Quick Answer",
+           "esm_instructions":"One touch answer.",
+	   "esm_quick_answers":["YES","NO","Maybe"],
+           "esm_submit":"Next",
+           "esm_expiration_threshold": 60,
+           "esm_trigger": "bd-q8"
+           }
+       },
+	{"esm": {
+		"esm_type":6,
+		"esm_title":"ESM Scale",
+		"esm_instructions":"Between 0 and 10 with 2 increments",
+		"esm_scale_min":0,
+		"esm_scale_max":10,
+		"esm_scale_start":0,
+		"esm_scale_max_label":"10",
+		"esm_scale_min_label":"0",
+		"esm_scale_step":2,
+		"esm_submit":"OK",
+		"esm_expiration_threshold":60,
+		"esm_trigger":"AWARE Tester"
+		}
+	},
+	{"esm": {
+           "esm_type": 7,
+           "esm_title":"ESM Date",
+           "esm_instructions":"Please select a date and time",
+           "esm_submit":"Next",
+           "esm_expiration_threshold": 60,
+           "esm_trigger": "bd-q9"
+           }
+       },
+	{"esm": {
+           "esm_type": 8,
+           "esm_title":"ESM PAM",
+           "esm_instructions":"Please select a date and time",
+           "esm_submit":"Next",
+           "esm_expiration_threshold": 60,
+           "esm_trigger": "bd-q10"
+           }
+       }
+	]
+	}
+]
